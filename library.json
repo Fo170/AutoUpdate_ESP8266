@@ -1,0 +1,23 @@
+{
+  "name": "AutoUpdate_ESP8266",
+  "keywords": "AutoUpdate_ESP8266, OTA, ESP8266",
+  "description": "Arduino library for AutoUpdate ESP8266",
+  "authors":
+  [
+    {
+      "name": "Olivier FOURNET",
+      "email": "olivier.fournet@free.fr",
+      "maintainer": true
+    }
+  ],
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/Fo170/AutoUpdate_ESP8266.git"
+  },
+  "version": "0.0",
+  "license": "GPL-3.0 license",
+  "frameworks": "arduino",
+  "platforms": "ESP8266",
+  "headers": "AutoUpdate_ESP8266.h"
+}
