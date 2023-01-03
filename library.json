@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/Fo170/AutoUpdate_ESP8266.git"
   },
-  "version": "0.0",
+  "version": "0.8",
   "license": "GPL-3.0 license",
   "frameworks": "arduino",
   "platforms": "ESP8266",
