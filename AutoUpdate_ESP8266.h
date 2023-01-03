@@ -1,4 +1,4 @@
-// #define FIRMWARE_VERSION "0.7"
+// #define FIRMWARE_VERSION "0.8"
 const char* FirmwareVersion = FIRMWARE_VERSION;
 
 // #define DEBUG_AUTOUPDATE_ESP8266
@@ -39,15 +39,6 @@ String lecture_fichier_distant(void)
   // Faire une requête HTTP GET
   if(client2.connect(HOST_UPDATE, 80)) 
   {
-    /*client2.print(String("GET /electronique/firmwares/iOT_Az/firmware.txt HTTP/1.1\r\n") +
-                 "Host: olivier.fournet.free.fr\r\n" +
-                 "Connection: close\r\n\r\n");*/
-				 
-	/*
-	client2.print(String("GET ") + String("/electronique/firmwares/iOT_Az/") + String("firmware.txt") + String(" HTTP/1.1\r\n") + String("Host: ") + String("olivier.fournet.free.fr") + 
-	String("\r\n Connection: close\r\n\r\n");
-	*/
-	
 	client2.print(String("GET ") + String(PATH_UPDATE) + String(FILE_UPDATE_TXT) + String(" HTTP/1.1\r\n") + String("Host: ") + String(HOST_UPDATE) + String("\r\n Connection: close\r\n\r\n") );
     unsigned long timeout = millis();
     while(client2.available() == 0) 
