@@ -1,6 +1,6 @@
 {
   "name": "AutoUpdate_ESP8266",
-  "keywords": "AutoUpdate_ESP8266, OTA, ESP8266",
+  "keywords": "AutoUpdate_ESP8266, OTA, ESP8266, Update, Over, the, air",
   "description": "Arduino library for AutoUpdate ESP8266",
   "authors":
   [
@@ -13,11 +13,13 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/Fo170/AutoUpdate_ESP8266.git"
+    "url": "https://github.com/Fo170/AutoUpdate_ESP8266"
   },
   "version": "0.8",
   "license": "GPL-3.0 license",
   "frameworks": "arduino",
-  "platforms": "ESP8266",
+  "platforms": [
+        "espressif8266"
+    ]
   "headers": "AutoUpdate_ESP8266.h"
 }
