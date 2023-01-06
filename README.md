@@ -1,3 +1,1 @@
-# AutoUpdate_ESP8266
-
-# v0.8
+# AutoUpdate_ESP8266 v1.0.0
