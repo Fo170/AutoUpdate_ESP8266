@@ -1,4 +1,4 @@
-// #define FIRMWARE_VERSION "0.8"
+// #define FIRMWARE_VERSION "1.0.0"
 const char* FirmwareVersion = FIRMWARE_VERSION;
 
 // #define DEBUG_AUTOUPDATE_ESP8266
