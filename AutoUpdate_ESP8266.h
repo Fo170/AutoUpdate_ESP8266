@@ -1,4 +1,4 @@
-// #define FIRMWARE_VERSION "1.1.0"
+// #define FIRMWARE_VERSION "1.5.0"
 const char* FirmwareVersion = FIRMWARE_VERSION;
 
 // #define DEBUG_AUTOUPDATE_ESP8266
@@ -7,14 +7,6 @@ const char* FirmwareVersion = FIRMWARE_VERSION;
 // #define FIRMWARE_URL_TXT   "http://url/firmware.txt"
 const char *firmwareURL = FIRMWARE_URL_BIN;
 const char *firmwareTXT = FIRMWARE_URL_TXT;
-
-// Exemple pour un hébergement sur free.fr
-// #define HOST_UPDATE  "site.free.fr"
-// #define PATH_UPDATE "firmwares/"
-// #define FILE_UPDATE_TXT "firmware.txt"
-// #define FILE_UPDATE_BIN "firmware.bin"
-
-#define SEPARATEUR_SIMPLE_CHR  "----------------"
 
 int etat_update_firmware = 0;
 String lecture_fichier_distant(void);
@@ -36,60 +28,43 @@ ESP8266HTTPUpdate ESP_httpUpdate; // Use the correct object from the library
 	
 String lecture_fichier_distant(void) 
 {
-  WiFiClient client2;
-  String payload = "";
-  Serial.println(F(SEPARATEUR_SIMPLE_CHR));
-  // Faire une requête HTTP GET
-  if(client2.connect(HOST_UPDATE, 80)) 
-  {
-	client2.print(String("GET ") + String(PATH_UPDATE) + String(FILE_UPDATE_TXT) + String(" HTTP/1.1\r\n") + String("Host: ") + String(HOST_UPDATE) + String("\r\n Connection: close\r\n\r\n") );
-    unsigned long timeout = millis();
-    while(client2.available() == 0) 
-    {
-      if(millis() - timeout > 5000) 
-      {
-        Serial.println("Erreur dans la requête HTTP : timeout");
-		
-        client2.stop();
-        return payload;
-      }
-    }
-    // Lire le contenu du fichier
-    while(client2.available()) 
-    {
-      String line = client2.readStringUntil('\n');
-      payload = line;
-    }
-    /*
-    while(client2.available()) // while (client2.connected()) 
-    {
-      String line = client2.readStringUntil('\n');
-      payload += line;
-      if (line == "\r") 
-      {
-        break;
-      }
-    }
-*/
-    #ifdef DEBUG_AUTOUPDATE_ESP
-    Serial.println("Lecture du contenu du fichier distant :");
-    Serial.println(payload);
-	#endif
-  }
-  else 
-  {
-    Serial.println("Erreur dans la requête HTTP : échec de la connexion au serveur");   
-  }
+ String payload = "";
+ WiFiClient client; // Create a WiFiClient object
+    HTTPClient http;
 
-  return payload;
+    // Use the new API with WiFiClient and URL
+    if (http.begin(client, FIRMWARE_URL_TXT)) {
+        int httpCode = http.GET();
+
+        if (httpCode > 0) {
+            if (httpCode == HTTP_CODE_OK) {
+                String payload = http.getString();
+                http.end();
+                return payload;
+            } else {
+                Serial.printf("HTTP GET failed, code: %d\n", httpCode);
+            }
+        } else {
+            Serial.printf("HTTP GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+        }
+        http.end();
+    } else {
+        Serial.println("Unable to connect to the server.");
+    }
+
+    return ""; // Return an empty string if the request fails
 }
 
 int UpDateOrNot(void) 
 {
   int etat_update = 0;
-
+  Serial.print("version actuel : ");
+  Serial.println(FirmwareVersion);
   // Téléchargement du fichier du firmware.txt
     String payload_txt = lecture_fichier_distant();
+	Serial.print("payload_txt : ");
+    Serial.println(payload_txt);
+	
     // Extraction de la version du firmware
     char* str = (char*) malloc(payload_txt.length() + 1);
     payload_txt.toCharArray(str, payload_txt.length() + 1);
@@ -100,20 +75,13 @@ int UpDateOrNot(void)
       {
         char* version_en_ligne = token + 11;
         // Comparaison de la version du firmware
-		
-        Serial.println(SEPARATEUR_SIMPLE_CHR);
-        Serial.print("version actuel : ");
-        Serial.print(FirmwareVersion);
-        Serial.print(" / version_en_ligne : ");
+        Serial.print("version_en_ligne : ");
         Serial.println(version_en_ligne);
         
         if (strcmp(version_en_ligne, FirmwareVersion) > 0) 
         {
           // Mise à jour du firmware
-		  
-          Serial.println(SEPARATEUR_SIMPLE_CHR);
-          Serial.print("Mise à jour du firmware vers la version : ");
-          Serial.println(version_en_ligne);
+          Serial.println("Mise à jour du firmware vers la nouvelle version");
           
           etat_update = 1;
         }
@@ -150,8 +118,6 @@ void AutoUpdate(void)
 	WiFiClient client_update;
   
     etat_update_firmware = UpDateOrNot();
-    Serial.println(F(SEPARATEUR_SIMPLE_CHR));
-
     Serial.print("etat_update_firmware : ");
     Serial.println(etat_update_firmware);
     
@@ -200,5 +166,3 @@ void AutoUpdate(void)
       }
     }
 }
-
-
