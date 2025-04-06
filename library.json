@@ -2,10 +2,10 @@
   "build": 
   {
    "name": "AutoUpdate_ESP8266",
-   "version": "1.0.0",
+   "version": "1.1.0",
    "frameworks": ["arduino"],
    "platforms": ["espressif8266"],
-  "headers": "AutoUpdate_ESP8266.h"
+   "headers": "AutoUpdate_ESP8266.h"
   },
   
   
