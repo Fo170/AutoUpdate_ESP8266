@@ -1,4 +1,4 @@
-// #define FIRMWARE_VERSION "1.0.0"
+// #define FIRMWARE_VERSION "1.1.0"
 const char* FirmwareVersion = FIRMWARE_VERSION;
 
 // #define DEBUG_AUTOUPDATE_ESP8266
@@ -31,6 +31,9 @@ void update_error(int err);
 
 void AutoUpdate(void);
 
+#include <ESP8266httpUpdate.h> // Include the HTTPUpdate library for ESP8266
+ESP8266HTTPUpdate ESP_httpUpdate; // Use the correct object from the library
+	
 String lecture_fichier_distant(void) 
 {
   WiFiClient client2;
@@ -45,7 +48,6 @@ String lecture_fichier_distant(void)
     {
       if(millis() - timeout > 5000) 
       {
-		
         Serial.println("Erreur dans la requête HTTP : timeout");
 		
         client2.stop();
@@ -69,15 +71,14 @@ String lecture_fichier_distant(void)
       }
     }
 */
-    #ifdef DEBUG_AUTOUPDATE_ESP8266
+    #ifdef DEBUG_AUTOUPDATE_ESP
     Serial.println("Lecture du contenu du fichier distant :");
     Serial.println(payload);
 	#endif
   }
-  else {
-	  
-    Serial.println("Erreur dans la requête HTTP : échec de la connexion au serveur");
-	   
+  else 
+  {
+    Serial.println("Erreur dans la requête HTTP : échec de la connexion au serveur");   
   }
 
   return payload;
@@ -124,25 +125,30 @@ int UpDateOrNot(void)
   return etat_update;
 }
 
-void update_started(void) {
+void update_started(void) 
+{
   Serial.println("CALLBACK:  HTTP update process started");
 }
  
-void update_finished(void) {
+void update_finished(void) 
+{
   Serial.println("CALLBACK:  HTTP update process finished");
 }
  
-void update_progress(int cur, int total) {
+void update_progress(int cur, int total) 
+{
   Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
 }
  
-void update_error(int err) {
+void update_error(int err) 
+{
   Serial.printf("CALLBACK:  HTTP update fatal error code %d\n", err);
 }
 
 void AutoUpdate(void)
 {
 	WiFiClient client_update;
+  
     etat_update_firmware = UpDateOrNot();
     Serial.println(F(SEPARATEUR_SIMPLE_CHR));
 
@@ -156,26 +162,26 @@ void AutoUpdate(void)
     // On a good connection the LED should flash regularly. On a bad connection the LED will be
     // on much longer than it will be off. Other pins than LED_BUILTIN may be used. The second
     // value is used to put the LED on. If the LED is on with HIGH, that value should be passed
-    ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
- 
+	  
+    ESP_httpUpdate.setLedPin(LED_BUILTIN, LOW);
+	
     // Add optional callback notifiers
-    ESPhttpUpdate.onStart(update_started);
-    ESPhttpUpdate.onEnd(update_finished);
-    ESPhttpUpdate.onProgress(update_progress);
-    ESPhttpUpdate.onError(update_error);
- 
-    ESPhttpUpdate.rebootOnUpdate(false); // remove automatic update
- 
+    ESP_httpUpdate.onStart(update_started);
+    ESP_httpUpdate.onEnd(update_finished);
+    ESP_httpUpdate.onProgress(update_progress);
+    ESP_httpUpdate.onError(update_error);
+    ESP_httpUpdate.rebootOnUpdate(false); // remove automatic update
+
     if( etat_update_firmware )
     {
       Serial.println(F("Update start now!"));
      
-      t_httpUpdate_return ret = ESPhttpUpdate.update(client_update, firmwareURL);
-    
+      t_httpUpdate_return ret = ESP_httpUpdate.update(client_update, firmwareURL);
+  
       switch (ret) 
       {
         case HTTP_UPDATE_FAILED:
-        Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s --> %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str(), firmwareURL);
+        Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s --> %s\n", ESP_httpUpdate.getLastError(), ESP_httpUpdate.getLastErrorString().c_str(), firmwareURL);
         Serial.println(F("Retry in 10secs!"));
         delay(10000); // Wait 10secs
         break;
@@ -194,4 +200,5 @@ void AutoUpdate(void)
       }
     }
 }
+
 
