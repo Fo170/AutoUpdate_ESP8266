@@ -1,5 +1,5 @@
 // Version de la librairie (source UNIQUE — agrégée par liste_lib.h)
-#define __AUTOUPDATE_ESP8266_H_VERSION__ "1.5.0"
+#define __AUTOUPDATE_ESP8266_H_VERSION__ "1.5.1"
 
 // #define FIRMWARE_VERSION "1.5.0"
 const char* FirmwareVersion = FIRMWARE_VERSION;
